@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 import Image from "next/image"
 import logo from "../../asset/img/logo.png"
+import bg from "../../asset/img/bg.png"
+import bg1 from "../../asset/img/bg1.png"
+
 
 const { NextFetchEvent } = require("next/server");
 
@@ -57,9 +60,15 @@ export default function Layout() {
                     </SheetContent>
                 </Sheet>
             </header>
-            <main className="flex-1">
-                <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
-                    <div className="container px-4 md:px-6 text-center">
+            <main className="flex-1 ">
+
+                <section className="relative w-full py-12 md:py-24 lg:py-32 xl:py-48">
+                    <Image
+                        src={bg1}
+                        alt="Background"
+                        className="absolute  inset-0 w-full h-full object-cover opacity-30 rounded-3xl z-0"
+                    />
+                    <div className="relative z-10 container px-4 md:px-6 text-center">
                         <div className="space-y-4">
                             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl xl:text-6xl">
                                 Unlock the Power of AI Support
@@ -80,6 +89,7 @@ export default function Layout() {
                         </div>
                     </div>
                 </section>
+
                 <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
                     <div className="container px-4 md:px-6">
                         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
@@ -119,12 +129,11 @@ export default function Layout() {
                                 </ul>
                             </div>
                             <div className="flex items-center justify-center">
-                                <img
-                                    src="/placeholder.svg"
-                                    width="550"
-                                    height="550"
+                                <Image
+                                    src={bg}
                                     alt="AI Support"
-                                    className="mx-auto aspect-square overflow-hidden rounded-xl object-cover"
+                                    className="w-full max-w-[500px] rounded-3xl shadow-2xl"
+
                                 />
                             </div>
                         </div>

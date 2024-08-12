@@ -19,6 +19,7 @@ export default function Chat() {
   const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
+    systemInstruction: "You are a supportive ai , should always support user with any issue.",
     model: "gemini-1.5-flash",
   });
 

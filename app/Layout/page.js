@@ -8,7 +8,7 @@ import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 import Image from "next/image"
-import logo from "../../asset/img/logo.png"
+import logo from "../../asset/img/Logo.png"
 import bg from "../../asset/img/bg.png"
 import bg1 from "../../asset/img/bg1.png"
 

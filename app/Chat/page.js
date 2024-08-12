@@ -3,23 +3,28 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from "react-markdown";
 import {
   GoogleGenerativeAI,
   HarmCategory,
   HarmBlockThreshold,
 } from "@google/generative-ai";
+import translate from "translate";
+
+translate.engine = "google";
 
 export default function Chat() {
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [language, setLanguage] = useState("en");
   const chatContainerRef = useRef(null);
 
   const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    systemInstruction: "You are a supportive ai , should always support user with any issue.",
+    systemInstruction:
+      "You are a supportive AI. Always support the user with any issue.",
     model: "gemini-1.5-flash",
   });
 
@@ -43,7 +48,12 @@ export default function Chat() {
     try {
       const chatSession = model.startChat({ generationConfig });
       const result = await chatSession.sendMessage(prompt);
-      const message = await result.response.text();
+      let message = await result.response.text();
+
+      // Translate message if not in English
+      if (language !== "en") {
+        message = await translate(message, { to: language });
+      }
 
       const botMessage = { type: "bot", content: message };
       setMessages((prev) => [...prev, botMessage]);
@@ -72,15 +82,15 @@ export default function Chat() {
           <BotIcon className="w-6 h-6" />
           <h1 className="text-xl font-bold">AI Assistant</h1>
         </div>
-        <Button variant="ghost" size="icon" className="rounded-full">
-          <SettingsIcon className="w-5 h-5" />
-          <span className="sr-only">Settings</span>
-        </Button>
+        <div className="flex items-center gap-4 ">
+         
+          <Button variant="ghost" size="icon" className="rounded-full">
+            <SettingsIcon className="w-5 h-5" />
+            <span className="sr-only">Settings</span>
+          </Button>
+        </div>
       </header>
-      <div
-        className="flex-1 overflow-auto p-6"
-        ref={chatContainerRef}
-      >
+      <div className="flex-1 overflow-auto p-6" ref={chatContainerRef}>
         <div className="grid gap-4">
           {messages.map((message, index) => (
             <div
@@ -100,8 +110,12 @@ export default function Chat() {
                 <div className="font-bold">
                   {message.type === "user" ? "You" : "AI Assistant"}
                 </div>
-                <div className={`prose text-muted-foreground p-4 rounded-lg shadow-xl ${message.type === "user" ? "bg-white" : "bg-slate-200"}`}>
-                    <ReactMarkdown>{message.content}</ReactMarkdown>
+                <div
+                  className={`prose text-muted-foreground p-4 rounded-lg shadow-xl ${
+                    message.type === "user" ? "bg-white" : "bg-slate-200"
+                  }`}
+                >
+                  <ReactMarkdown>{message.content}</ReactMarkdown>
                 </div>
               </div>
             </div>
@@ -128,6 +142,7 @@ export default function Chat() {
             type="submit"
             size="icon"
             className="absolute w-8 h-8 top-3 right-3"
+            disabled={isLoading}
           >
             <ArrowUpIcon className="w-4 h-4" />
             <span className="sr-only">Send</span>
@@ -196,7 +211,7 @@ function SettingsIcon(props) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
       <circle cx="12" cy="12" r="3" />
     </svg>
   );
@@ -216,8 +231,9 @@ function UserIcon(props) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <circle cx="12" cy="8" r="4" />
-      <path d="M16 21a4 4 0 0 0-8 0" />
+      <circle cx="12" cy="7" r="4" />
+      <path d="M5.5 21h13" />
+      <path d="M6 17.5h12c.3 0 .5-.2.5-.5s-.2-.5-.5-.5h-12c-.3 0-.5.2-.5.5s.2.5.5.5z" />
     </svg>
   );
 }
